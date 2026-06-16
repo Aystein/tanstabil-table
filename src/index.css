@@ -1,0 +1,98 @@
+@import "@fontsource-variable/geist";
+
+:root {
+  --font-sans: "Geist Variable", sans-serif;
+  --radius: 0.625rem;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --shadow-md: 0 10px 30px rgb(15 23 42 / 0.12);
+
+  --color-background: #ffffff;
+  --color-foreground: #242424;
+  --color-card: #ffffff;
+  --color-card-foreground: #242424;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #242424;
+  --color-primary: #0f766e;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f4f4f5;
+  --color-secondary-foreground: #27272a;
+  --color-muted: #f4f4f5;
+  --color-muted-foreground: #71717a;
+  --color-accent: #f4f4f5;
+  --color-accent-foreground: #27272a;
+  --color-destructive: #dc2626;
+  --color-border: #e4e4e7;
+  --color-input: #e4e4e7;
+  --color-ring: #14b8a6;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+html {
+  font-family: var(--font-sans);
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+[data-slot="resizable-panel-group"] {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+[data-slot="resizable-panel-group"][data-panel-group-direction="vertical"] {
+  flex-direction: column;
+}
+
+[data-slot="resizable-handle"] {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1px;
+  background: var(--color-border);
+}
+
+[data-slot="resizable-handle"][data-panel-group-direction="vertical"] {
+  width: 100%;
+  height: 1px;
+}
+
+[data-slot="resizable-handle"]::after {
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  width: 0.25rem;
+  content: "";
+  transform: translateX(-50%);
+}
+
+[data-slot="resizable-handle-grip"] {
+  z-index: 10;
+  width: 0.25rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: var(--color-border);
+}
