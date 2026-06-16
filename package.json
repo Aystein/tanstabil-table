@@ -2,12 +2,14 @@
   "name": "tanstabil-table",
   "version": "0.0.0",
   "private": true,
+  "homepage": "https://aystein.github.io/tanstabil-table",
   "type": "module",
   "scripts": {
     "dev": "vp dev",
     "build": "tsc && vp build",
     "preview": "vp preview",
-    "tour:screenshots": "node scripts/capture-tour-screenshots.mjs"
+    "tour:screenshots": "node scripts/capture-tour-screenshots.mjs",
+    "deploy": "vp build && gh-pages -d dist"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.54",
@@ -51,6 +53,7 @@
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "gh-pages": "^6.3.0",
     "typescript": "~6.0.2",
     "vite": "catalog:",
     "vite-plus": "catalog:"

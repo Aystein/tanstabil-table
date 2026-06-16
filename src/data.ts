@@ -46,7 +46,7 @@ function expandPokemonData(rows: Pokemon[]) {
 
 async function loadPokemonData(): Promise<Pokemon[]> {
   try {
-    const response = await fetch("/pokemon.csv");
+    const response = await fetch(`${import.meta.env.BASE_URL}pokemon.csv`);
     const csvText = await response.text();
 
     const result = Papa.parse<Record<string, string>>(csvText, {
