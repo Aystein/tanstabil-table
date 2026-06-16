@@ -1,6 +1,7 @@
 import { pokemonPromise, type Pokemon } from "../data";
-import { Badge, Box, Center, Group, Image, Stack, Text } from "@mantine/core";
+import { Badge, Box, Center, Group, Stack, Text } from "@mantine/core";
 import { columns } from "./table-columns";
+import { DummySprite } from "./sprite-cell";
 import { TableGrid } from "./table-grid";
 import { useTableAiTools } from "./use-table-ai-tools";
 import { useVantageTable, vantageFeatures } from "./use-vantage-table";
@@ -10,7 +11,6 @@ import type { GridCellProps } from "./table-grid-cell";
 
 function PokemonGridCell({ row }: GridCellProps<Pokemon>) {
   const pokemon = row.original;
-  const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.pokedex_number}.png`;
   const stats = [
     ["HP", pokemon.hp],
     ["ATK", pokemon.attack],
@@ -25,7 +25,9 @@ function PokemonGridCell({ row }: GridCellProps<Pokemon>) {
         h="100%"
         style={{ aspectRatio: "1", borderRadius: "var(--radius-md)", flexShrink: 0 }}
       >
-        <Image alt="" fit="contain" h="100%" p={4} src={spriteUrl} w="100%" />
+        <Box h="70%" w="70%">
+          <DummySprite label={`${pokemon.name} dummy sprite`} seed={pokemon.pokedex_number} />
+        </Box>
       </Center>
 
       <Stack gap="xs" justify="space-between" miw={0} style={{ flex: "1 1 0" }}>
