@@ -1,12 +1,12 @@
-import type { AccessorFnColumnDef, RowData } from "@tanstack/react-table";
+import type { RowData } from "@tanstack/react-table";
+import type { TanstabilAccessorFnColumnDef } from "../table-types";
 import { Menu } from "@mantine/core";
-import type { VantageFeatures } from "../use-vantage-table";
 import { isClusterColumn, type ClusterColumnDef } from "./types";
 import { createCategoricalArrayColumn } from "../categorical-array-column/util";
 import { createClusterFeature } from "./cluster-column";
 
 export function createClusterColumnDef<TData extends RowData>(
-  columnDef: AccessorFnColumnDef<VantageFeatures, TData, string[] | undefined>,
+  columnDef: TanstabilAccessorFnColumnDef<TData, string[] | undefined>,
 ): ClusterColumnDef<TData> {
   return {
     ...createCategoricalArrayColumn(columnDef),

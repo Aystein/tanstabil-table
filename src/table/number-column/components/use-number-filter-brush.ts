@@ -2,6 +2,8 @@ import type { Bin, ScaleLinear } from "d3";
 import { useDebouncedCallback } from "@tanstack/react-pacer";
 import { useGesture } from "@use-gesture/react";
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { RowData } from "@tanstack/react-table";
+import type { PixelSnappedBarX } from "../../features/histogram/histogram-layout";
 import { getNumberBinId } from "../number-column-def";
 import type { FilterValue, NumberColumn } from "../types";
 
@@ -120,15 +122,29 @@ export function getBinIndexForValue(
   });
 }
 
-export function useNumberFilterBrush({
+export function getBinIndexForX(x: number, barLayout: PixelSnappedBarX[]) {
+  return barLayout.findIndex((bar, index) => {
+    const x1 = bar.x + bar.width;
+
+    if (bar.width <= 0) {
+      return false;
+    }
+
+    return index === barLayout.length - 1 ? x >= bar.x && x <= x1 : x >= bar.x && x < x1;
+  });
+}
+
+export function useNumberFilterBrush<TData extends RowData>({
+  cssBarLayout,
   binDomain,
   bins,
   column,
   xScale,
 }: {
+  cssBarLayout: PixelSnappedBarX[];
   binDomain: [number, number];
   bins: Bin<number, number>[];
-  column: NumberColumn<any>;
+  column: NumberColumn<TData>;
   xScale: ScaleLinear<number, number>;
 }) {
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -264,21 +280,18 @@ export function useNumberFilterBrush({
         return;
       }
 
-      const value = xScale.invert(x);
-      const nextIndex = getBinIndexForValue(value, bins, binDomain);
+      const nextIndex = getBinIndexForX(x, cssBarLayout);
 
       setHoveredBinIndex(nextIndex === -1 ? undefined : nextIndex);
     },
-    [binDomain, bins, isBrushHit, isDragging, xScale],
+    [cssBarLayout, isBrushHit, isDragging],
   );
 
   const getBinIndexAtX = useCallback(
     (x: number) => {
-      const value = xScale.invert(x);
-
-      return getBinIndexForValue(value, bins, binDomain);
+      return getBinIndexForX(x, cssBarLayout);
     },
-    [binDomain, bins, xScale],
+    [cssBarLayout],
   );
 
   const toggleBinAtX = useCallback(
@@ -418,7 +431,6 @@ export function useNumberFilterBrush({
         }
 
         if (last) {
-          console.log("hi");
           finishDrag();
         }
       },

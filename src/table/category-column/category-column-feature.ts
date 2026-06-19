@@ -1,20 +1,20 @@
-import { memo, type Column, type RowData, type Table_Internal } from "@tanstack/react-table";
+import { memo, type RowData } from "@tanstack/react-table";
 import type { Category, CategoryColumnOptions, CategoryFeatureShape, ValidCategory } from "./types";
-import type { VantageFeatures } from "../use-vantage-table";
+import type { TanstabilColumn, TanstabilTable_Internal } from "../table-types";
 
 const categoricalPalette = [
-  "hsl(199 74% 48%)",
-  "hsl(154 56% 42%)",
-  "hsl(37 87% 52%)",
-  "hsl(344 72% 56%)",
-  "hsl(262 64% 60%)",
-  "hsl(18 80% 55%)",
-  "hsl(180 62% 38%)",
-  "hsl(76 58% 42%)",
-  "hsl(223 68% 56%)",
-  "hsl(322 58% 55%)",
-  "hsl(43 72% 44%)",
-  "hsl(167 48% 36%)",
+  "#209cd5",
+  "#2fa773",
+  "#ef9d1a",
+  "#e03e69",
+  "#8858da",
+  "#e86830",
+  "#259d9d",
+  "#88a92d",
+  "#436edb",
+  "#cf4a9e",
+  "#c1931f",
+  "#308875",
 ];
 
 export function getCategoricalColor(value: string | undefined) {
@@ -45,8 +45,8 @@ function _getCategories(coreUniqueValues: Map<any, number>): Category[] {
 }
 
 export function createCategoryFeature<TData extends RowData>(
-  _table: Table_Internal<VantageFeatures, TData>,
-  column: Column<VantageFeatures, TData>,
+  _table: TanstabilTable_Internal<TData>,
+  column: TanstabilColumn<TData, any>,
 ): CategoryFeatureShape {
   const columnDef = column.columnDef as typeof column.columnDef & CategoryColumnOptions;
   const getCategories = memo({

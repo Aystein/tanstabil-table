@@ -30,10 +30,10 @@ function expandPokemonData(rows: Pokemon[]) {
     return rows;
   }
 
-  const copyCount = Math.ceil(targetPokemonEntries / rows.length);
+  const copyCount = 1;
   let i = 0;
   return Array.from({ length: copyCount }, (_, copyIndex) =>
-    rows.map((row, ii) => ({
+    rows.map((row) => ({
       ...row,
       index: i++,
       id: copyIndex === 0 ? row.id : `${row.id}:${copyIndex}`,

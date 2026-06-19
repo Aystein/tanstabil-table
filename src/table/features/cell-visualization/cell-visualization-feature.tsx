@@ -2,13 +2,12 @@ import {
   assignTableAPIs,
   flexRender,
   makeStateUpdater,
-  type CellContext,
   type RowData,
   type TableFeature,
   type Updater,
 } from "@tanstack/react-table";
+import type { TanstabilCellContext } from "@/table/table-types";
 import { getDefaultCellVisualizationState, getDefaultSummaryVisualizationState } from "./utils";
-import type { VantageFeatures } from "../../use-vantage-table";
 import type { CellVisualizationState, SummaryVisualizationState } from "./types";
 
 export function constructCellVisualizationTableFeature<TData extends RowData>(): TableFeature {
@@ -30,7 +29,7 @@ export function constructCellVisualizationTableFeature<TData extends RowData>():
       return {
         cell: (_props) => {
           // @TODO: Is there even a way to correctly type this?
-          const props = _props as unknown as CellContext<VantageFeatures, TData>;
+          const props = _props as unknown as TanstabilCellContext<TData>;
 
           const cellVisualizations = props.table.atoms.cellVisualizations.get();
           const columnDef = props.column.columnDef;

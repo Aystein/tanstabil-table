@@ -1,19 +1,17 @@
-import {
-  memo,
-  type AccessorFnColumnDef,
-  type Column,
-  type RowData,
-  type Table_Internal,
-} from "@tanstack/react-table";
-import type { VantageFeatures } from "../use-vantage-table";
+import { memo, type RowData } from "@tanstack/react-table";
 import type { NumberArrayColumnDef, NumberArrayFeatureShape } from "./types";
+import type {
+  TanstabilAccessorFnColumnDef,
+  TanstabilColumn,
+  TanstabilTable_Internal,
+} from "../table-types";
 import { interpolateBlues, scaleSequential } from "d3";
 import { textCellRenderer } from "../text-cell";
 import { numberArrayCellRenderer } from "./number-array-column";
 
-export function createNumberArrayFeature(
-  table: Table_Internal<VantageFeatures, any>,
-  column: Column<VantageFeatures, any>,
+export function createNumberArrayFeature<TData extends RowData>(
+  table: TanstabilTable_Internal<TData>,
+  column: TanstabilColumn<TData, number[] | undefined>,
 ): NumberArrayFeatureShape {
   const _getDomain = memo({
     fn: (rowModel) => {
@@ -57,7 +55,7 @@ export function createNumberArrayFeature(
 }
 
 export function createNumberArrayColumn<TData extends RowData>(
-  columnDef: AccessorFnColumnDef<VantageFeatures, TData, number[] | undefined>,
+  columnDef: TanstabilAccessorFnColumnDef<TData, number[] | undefined>,
 ): NumberArrayColumnDef<TData> {
   return {
     ...columnDef,

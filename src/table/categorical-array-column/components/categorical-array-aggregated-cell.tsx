@@ -1,6 +1,6 @@
-import type { VantageFeatures } from "@/table/use-vantage-table";
 import type { CellRenderer } from "@/table/features/cell-visualization/types";
-import type { RowData, CellContext } from "@tanstack/react-table";
+import type { TanstabilCellContext } from "@/table/table-types";
+import type { RowData } from "@tanstack/react-table";
 import { Text } from "@mantine/core";
 import { isCategoricalArrayColumn, type AggregationValue } from "../types";
 import { UpsetGlyph } from "./upset-glyph";
@@ -11,7 +11,7 @@ export function CategoricalArrayColumnAggregatedCell<TData extends RowData, TVal
   getValue,
   table,
   column,
-}: CellContext<VantageFeatures, TData, TValue>) {
+}: TanstabilCellContext<TData, TValue>) {
   if (!isCategoricalArrayColumn(column)) {
     return null;
   }

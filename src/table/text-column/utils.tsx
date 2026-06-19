@@ -1,12 +1,12 @@
-import type { ColumnDef, RowData } from "@tanstack/react-table";
+import type { RowData } from "@tanstack/react-table";
 import type { TextColumnDef } from "./types";
-import type { VantageFeatures } from "../use-vantage-table";
 import { Filter } from "./components/filter";
 import { filterFn } from "./filter-fn";
 import { textCellRenderer } from "../text-cell";
+import type { TanstabilColumnDef } from "../table-types";
 
 export function createTextColumnDef<TData extends RowData>(
-  columnDef: ColumnDef<VantageFeatures, TData>,
+  columnDef: TanstabilColumnDef<TData>,
 ): TextColumnDef<TData> {
   return {
     ...columnDef,

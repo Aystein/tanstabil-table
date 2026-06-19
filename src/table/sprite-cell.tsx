@@ -1,6 +1,6 @@
 import { Box, Center } from "@mantine/core";
-import type { CellContext, RowData } from "@tanstack/react-table";
-import type { VantageFeatures } from "./use-vantage-table";
+import type { RowData } from "@tanstack/react-table";
+import type { TanstabilCellContext } from "./table-types";
 
 const spriteMasks = [
   ["00111100", "01122110", "11233211", "12322321", "12333321", "01222210", "00122100", "00011000"],
@@ -76,10 +76,7 @@ export function DummySprite({
   );
 }
 
-export function SpriteCell<TData extends RowData>({
-  getValue,
-  row,
-}: CellContext<VantageFeatures, TData>) {
+export function SpriteCell<TData extends RowData>({ getValue, row }: TanstabilCellContext<TData>) {
   const seed = String(getValue() ?? row.id);
 
   return (

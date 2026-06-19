@@ -1,11 +1,12 @@
-import type { CellContext, RowData, TableFeatures } from "@tanstack/react-table";
-import { Box, Text } from "@mantine/core";
+import type { RowData } from "@tanstack/react-table";
+import type { TanstabilCellContext } from "@/table/table-types";
 import { assertIsCategoryColumn } from "../types";
+import type { CellRenderer } from "@/table/features/cell-visualization/types";
 
 export function CategoryCell({
   getValue,
   column,
-}: CellContext<TableFeatures, RowData, string | undefined>) {
+}: TanstabilCellContext<RowData, string | undefined>) {
   assertIsCategoryColumn(column);
 
   const feature = column.feature();
@@ -20,30 +21,39 @@ export function CategoryCell({
   }
 
   return (
-    <Box
-      h="100%"
-      miw={0}
-      w="100%"
-      style={{ alignItems: "center", display: "flex", gap: "0.5rem", position: "relative" }}
+    <span
+      style={{
+        alignItems: "center",
+        display: "flex",
+        gap: "0.5rem",
+        width: "100%",
+      }}
     >
-      <Box
-        component="span"
-        style={{ backgroundColor: category.color, left: 1, top: 1, bottom: 2 }}
-        w={4}
-        pos="absolute"
-      />
-      <Text
-        component="span"
-        miw={0}
-        size="sm"
-        truncate
+      <div
         style={{
-          lineHeight: "inherit",
-          paddingInline: column.table.atoms.cellPadding.get(),
+          backgroundColor: category.color,
+          borderRadius: "50%",
+          flex: "0 0 auto",
+          height: "0.625rem",
+          width: "0.625rem",
+        }}
+      />
+      <span
+        style={{
+          minWidth: 0,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
         }}
       >
         {category.label}
-      </Text>
-    </Box>
+      </span>
+    </span>
   );
 }
+
+export const categoryCellRenderer: CellRenderer = {
+  component: CategoryCell,
+  id: "category",
+  name: "Category",
+};

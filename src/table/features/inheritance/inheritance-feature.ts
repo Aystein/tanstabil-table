@@ -1,14 +1,16 @@
 import {
   assignPrototypeAPIs,
   assignTableAPIs,
-  type FilterFn,
-  type Column,
   type RowData,
   type RowModel,
   type TableFeature,
   type TableFeatures,
 } from "@tanstack/react-table";
-import type { VantageFeatures } from "@/table/use-vantage-table";
+import type {
+  TanstabilColumn,
+  TanstabilFilterFn,
+  TanstabilTable_Internal,
+} from "@/table/table-types";
 
 function getCoreUniqueValues<TFeatures extends TableFeatures, TData extends RowData>(
   rowModel: RowModel<TFeatures, TData>,
@@ -21,7 +23,6 @@ function getCoreUniqueValues<TFeatures extends TableFeatures, TData extends RowD
     const row = flatRows[i]!;
 
     if (!("getUniqueValues" in row)) {
-      // Its a grouped row or something else
       continue;
     }
 
@@ -41,12 +42,16 @@ function getCoreUniqueValues<TFeatures extends TableFeatures, TData extends RowD
   return counts;
 }
 
-export const globalFilterFn: FilterFn<VantageFeatures, RowData> = (row, columnId, filterValue) => {
-  const column = row.getAllCellsByColumnId()[columnId]?.column;
+export const globalFilterFn: TanstabilFilterFn<RowData> = (row, columnId, filterValue) => {
+  const t0 = performance.now();
+  const column = row.table.getColumn(columnId);
   const columnGlobalFilterFn = column?.columnDef.globalFilterFn;
 
   if (columnGlobalFilterFn !== undefined) {
-    return columnGlobalFilterFn(row, columnId, filterValue);
+    const result = columnGlobalFilterFn(row, columnId, filterValue);
+    const t1 = performance.now();
+    console.log(t1 - t0, columnId);
+    return result;
   }
 
   const value = row.getValue(columnId);
@@ -60,24 +65,27 @@ export const globalFilterFn: FilterFn<VantageFeatures, RowData> = (row, columnId
 
 globalFilterFn.autoRemove = (value) => !value;
 
-export function constructCoreFeature(): TableFeature {
+export function constructInheritanceFeature(): TableFeature {
   return {
     assignColumnPrototype: (prototype, table) => {
-      assignPrototypeAPIs("typedColumnFeature", prototype, table, {
+      assignPrototypeAPIs("inheritanceFeature", prototype, table, {
         column_feature: {
-          fn: (column: Column<TableFeatures, RowData>) =>
-            column.columnDef.featureFactory?.(table, column),
+          fn: (column: TanstabilColumn<RowData>) =>
+            column.columnDef.featureFactory?.(
+              table as unknown as TanstabilTable_Internal<RowData>,
+              column,
+            ),
           memoDeps: () => ["feature"],
         },
         column_getCoreUniqueValues: {
-          fn: (column: Column<TableFeatures, RowData>) =>
+          fn: (column: TanstabilColumn<RowData>) =>
             getCoreUniqueValues(table.getCoreRowModel(), column.id),
           memoDeps: () => [table.getCoreRowModel()],
         },
       });
     },
     constructTableAPIs: (table) => {
-      assignTableAPIs("typedColumnFeature", table, {
+      assignTableAPIs("inheritanceFeature", table, {
         table_getRowSelectionIds: {
           fn: () => {
             const rowSelection = table.atoms.rowSelection?.get() ?? {};
@@ -89,4 +97,4 @@ export function constructCoreFeature(): TableFeature {
   };
 }
 
-export const typedColumnFeature = constructCoreFeature();
+export const inheritanceFeature = constructInheritanceFeature();

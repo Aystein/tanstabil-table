@@ -1,7 +1,6 @@
 import { Box, Checkbox } from "@mantine/core";
-import type { ColumnDef, RowData } from "@tanstack/react-table";
-import type { VantageFeatures } from "../use-vantage-table";
-import type { TableRow } from "../table-types";
+import type { RowData } from "@tanstack/react-table";
+import type { TableRow, TanstabilColumnDef } from "../table-types";
 
 function setGroupedRowSelected<TData extends RowData>(row: TableRow<TData>, selected: boolean) {
   const selectionTable = row.table as typeof row.table & {
@@ -29,7 +28,7 @@ function setGroupedRowSelected<TData extends RowData>(row: TableRow<TData>, sele
   });
 }
 
-export function createSelectionColumn<TData extends RowData>(): ColumnDef<VantageFeatures, TData> {
+export function createSelectionColumn<TData extends RowData>(): TanstabilColumnDef<TData> {
   return {
     id: "select",
     size: 12 + 16 + 12,

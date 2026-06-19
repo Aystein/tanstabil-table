@@ -1,5 +1,4 @@
-import type { FilterFn, Row } from "@tanstack/react-table";
-import type { VantageFeatures } from "../use-vantage-table";
+import type { TanstabilFilterFn, TanstabilRow } from "../table-types";
 
 export type ResolvedCategoryFilterValue =
   | {
@@ -13,8 +12,8 @@ export type CategoryFilterValue =
     }
   | undefined;
 
-export const categoryFilterFn: FilterFn<VantageFeatures, any> = (
-  row: Row<VantageFeatures, any>,
+export const categoryFilterFn: TanstabilFilterFn<any> = (
+  row: TanstabilRow<any>,
   columnId: string,
   filterValue: ResolvedCategoryFilterValue,
 ) => {

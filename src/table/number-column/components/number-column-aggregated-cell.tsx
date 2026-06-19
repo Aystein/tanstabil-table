@@ -1,6 +1,6 @@
-import type { CellContext, RowData } from "@tanstack/react-table";
-import type { VantageFeatures } from "@/table/use-vantage-table";
+import type { RowData } from "@tanstack/react-table";
 import type { CellRenderer } from "@/table/features/cell-visualization/types";
+import type { TanstabilCellContext } from "@/table/table-types";
 import type { AggregationValue } from "../types";
 import { scaleLinear } from "d3";
 
@@ -14,7 +14,7 @@ export function NumberColumnAggregatedCell<TData extends RowData>({
   getValue, // Use getValue() instead of renderValue() to get the raw data
   table,
   column,
-}: CellContext<VantageFeatures, TData, any>) {
+}: TanstabilCellContext<TData, any>) {
   const value = getValue();
 
   if (isAggregationValue(value)) {

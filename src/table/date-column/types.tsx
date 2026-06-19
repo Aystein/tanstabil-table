@@ -1,9 +1,9 @@
 import type { RowData } from "@tanstack/react-table";
-import type { TypedColumnTypes } from "../features/core-feature/types";
+import type { FeaturedTypes } from "../features/inheritance/types";
 
 export type DateFeatureShape = {};
 
-type DateColumnTypes<TData extends RowData> = TypedColumnTypes<
+type DateColumnTypes<TData extends RowData> = FeaturedTypes<
   TData,
   "date",
   DateFeatureShape,

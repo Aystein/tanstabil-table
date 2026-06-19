@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { CategoryFeatureShape } from "../category-column/types";
 import type { RowData } from "@tanstack/react-table";
-import type { TypedColumnTypes } from "../features/core-feature/types";
+import type { FeaturedTypes } from "../features/inheritance/types";
 
 export const CellValueSchema = z.array(z.string()).optional();
 
@@ -16,7 +16,7 @@ export type AggregationValue = z.infer<typeof AggregationValueSchema>;
 
 export type CategoricalArrayFeatureShape = CategoryFeatureShape & {};
 
-type CategoricalArrayColumnTypes<TData extends RowData> = TypedColumnTypes<
+type CategoricalArrayColumnTypes<TData extends RowData> = FeaturedTypes<
   TData,
   "categorical-array",
   CategoricalArrayFeatureShape,

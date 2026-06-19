@@ -1,10 +1,9 @@
+import type { RowData } from "@tanstack/react-table";
 import type {
-  RowData,
-  Table_Internal,
-  Column_Internal,
-  AccessorFnColumnDef,
-} from "@tanstack/react-table";
-import type { VantageFeatures } from "../use-vantage-table";
+  TanstabilAccessorFnColumnDef,
+  TanstabilColumn,
+  TanstabilTable_Internal,
+} from "../table-types";
 import type {
   AggregationValue,
   CategoricalArrayColumnDef,
@@ -32,8 +31,8 @@ function normalizeCellValue(value: unknown): string[] {
 }
 
 function createCategoricalArrayFeature<TData extends RowData>(
-  table: Table_Internal<VantageFeatures, TData>,
-  column: Column_Internal<VantageFeatures, TData>,
+  table: TanstabilTable_Internal<TData>,
+  column: TanstabilColumn<TData, string[] | undefined>,
 ): CategoricalArrayFeatureShape {
   return {
     ...createCategoryFeature(table, column),
@@ -41,7 +40,7 @@ function createCategoricalArrayFeature<TData extends RowData>(
 }
 
 export function createCategoricalArrayColumn<TData extends RowData>(
-  columnDef: AccessorFnColumnDef<VantageFeatures, TData, string[] | undefined>,
+  columnDef: TanstabilAccessorFnColumnDef<TData, string[] | undefined>,
 ): CategoricalArrayColumnDef<TData> {
   const { accessorFn } = columnDef;
 

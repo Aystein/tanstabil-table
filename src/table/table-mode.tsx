@@ -6,6 +6,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject }
 import { TableBodyCell } from "./table-cell";
 import { getVirtualCenterColumns, TableHeaderRows } from "./table-grid-headers";
 import { TableRowBand } from "./table-pane";
+import { TableSelectionOverviewRuler } from "./table-selection-overview-ruler";
 import { borderWidth, detailRowHeight, headerTextHeight, type TableInstance } from "./table-types";
 
 const maxNativeScrollHeight = 15_000_000;
@@ -110,6 +111,7 @@ export function TableMode<TData extends RowData>({ instance }: { instance: Table
   const centerHeaders = instance.getCenterLeafHeaders();
   const rowHeight = useSelector(instance.atoms.rowHeight);
   const filterHeight = useSelector(instance.atoms.filterHeight);
+  const rowSelection = useSelector(instance.atoms.rowSelection);
   const tableHeaderHeight = headerTextHeight + filterHeight + borderWidth;
   const totalWidth = leftWidth + centerWidth + rightWidth;
 
@@ -166,6 +168,13 @@ export function TableMode<TData extends RowData>({ instance }: { instance: Table
     [virtualCenterColumns],
   );
   const centerColumnIds = useMemo(() => centerColumns.map((column) => column.id), [centerColumns]);
+  const selectedRowIndexes = useMemo(
+    () =>
+      visibleRows.flatMap((row, index) => {
+        return rowSelection[row.id] || row.getIsSelected() ? [index] : [];
+      }),
+    [visibleRows, rowSelection],
+  );
   const virtualRows = rowVirtualizer.getVirtualItems();
   const logicalContentHeight = rowVirtualizer.getTotalSize();
   const scrollScale = getScrollScale({
@@ -182,144 +191,152 @@ export function TableMode<TData extends RowData>({ instance }: { instance: Table
   const centerContentWidth = Math.max(centerWidth, contentWidth - leftWidth - rightWidth);
 
   return (
-    <Box ref={viewportRef} style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
-      <Box
-        style={{
-          height: contentHeight,
-          position: "relative",
-          width: contentWidth,
-        }}
-      >
-        <TableHeaderRows
-          centerColumnIds={centerColumnIds}
-          centerContentWidth={centerContentWidth}
-          contentWidth={contentWidth}
-          instance={instance}
-          leftHeaders={leftHeaders}
-          leftWidth={leftWidth}
-          rightHeaders={rightHeaders}
-          rightWidth={rightWidth}
-          scrollElementRef={viewportRef}
-          virtualCenterColumns={virtualCenterColumns}
-        />
+    <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
+      <Box ref={viewportRef} style={{ height: "100%", minHeight: 0, overflow: "auto" }}>
+        <Box
+          style={{
+            height: contentHeight,
+            position: "relative",
+            width: contentWidth,
+          }}
+        >
+          <TableHeaderRows
+            centerColumnIds={centerColumnIds}
+            centerContentWidth={centerContentWidth}
+            contentWidth={contentWidth}
+            instance={instance}
+            leftHeaders={leftHeaders}
+            leftWidth={leftWidth}
+            rightHeaders={rightHeaders}
+            rightWidth={rightWidth}
+            scrollElementRef={viewportRef}
+            virtualCenterColumns={virtualCenterColumns}
+          />
 
-        {virtualRows.map((virtualRow) => {
-          const row = visibleRows[virtualRow.index];
+          {virtualRows.map((virtualRow) => {
+            const row = visibleRows[virtualRow.index];
 
-          if (!row) {
-            return null;
-          }
+            if (!row) {
+              return null;
+            }
 
-          const hasDetail = !row.getIsGrouped() && row.getIsExpanded();
+            const hasDetail = !row.getIsGrouped() && row.getIsExpanded();
 
-          return (
-            <TableRowBand
-              key={row.id}
-              row={row}
-              top={nativeScrollOffset + virtualRow.start - logicalScrollOffset}
-              virtualRow={virtualRow}
-              width={contentWidth}
-            >
-              {leftWidth > 0 ? (
-                <Box
-                  style={{
-                    background: "var(--row-bg)",
-                    height: "100%",
-                    left: 0,
-                    position: "sticky",
-                    width: leftWidth,
-                    zIndex: 20,
-                  }}
-                >
-                  {row.getLeftVisibleCells().map((cell) => (
-                    <TableBodyCell key={cell.id} cell={cell} instance={instance} pane="left" />
-                  ))}
-                  <Box
-                    aria-hidden
-                    style={{
-                      background: "var(--color-border)",
-                      bottom: 0,
-                      pointerEvents: "none",
-                      position: "absolute",
-                      right: 0,
-                      top: 0,
-                      width: 1,
-                      zIndex: 30,
-                    }}
-                  />
-                </Box>
-              ) : null}
-
-              <Box
-                style={{
-                  height: virtualRow.size,
-                  left: leftWidth,
-                  position: "absolute",
-                  top: 0,
-                  width: centerContentWidth,
-                }}
+            return (
+              <TableRowBand
+                key={row.id}
+                row={row}
+                top={nativeScrollOffset + virtualRow.start - logicalScrollOffset}
+                virtualRow={virtualRow}
+                width={contentWidth}
               >
-                {row
-                  .getCenterVisibleCells()
-                  .filter((cell) => virtualCenterColumnIds.has(cell.column.id))
-                  .map((cell) => (
-                    <TableBodyCell key={cell.id} cell={cell} instance={instance} pane="center" />
-                  ))}
-              </Box>
-
-              {hasDetail ? (
-                <Box
-                  style={{
-                    background: "color-mix(in oklab, var(--color-muted) 20%, transparent)",
-                    borderTop: "1px solid var(--color-border)",
-                    color: "var(--color-muted-foreground)",
-                    height: detailRowHeight,
-                    left: 0,
-                    padding: "0.5rem 0.75rem",
-                    position: "absolute",
-                    top: rowHeight,
-                    width: contentWidth,
-                    zIndex: 40,
-                  }}
-                >
-                  test
-                </Box>
-              ) : null}
-
-              {rightWidth > 0 ? (
-                <Box
-                  style={{
-                    background: "var(--row-bg)",
-                    height: "100%",
-                    marginLeft: "auto",
-                    position: "sticky",
-                    right: 0,
-                    width: rightWidth,
-                    zIndex: 20,
-                  }}
-                >
-                  {row.getRightVisibleCells().map((cell) => (
-                    <TableBodyCell key={cell.id} cell={cell} instance={instance} pane="right" />
-                  ))}
+                {leftWidth > 0 ? (
                   <Box
-                    aria-hidden
                     style={{
-                      background: "var(--color-border)",
-                      bottom: 0,
+                      background: "var(--row-bg)",
+                      height: "100%",
                       left: 0,
-                      pointerEvents: "none",
-                      position: "absolute",
-                      top: 0,
-                      width: 1,
-                      zIndex: 30,
+                      position: "sticky",
+                      width: leftWidth,
+                      zIndex: 20,
                     }}
-                  />
+                  >
+                    {row.getLeftVisibleCells().map((cell) => (
+                      <TableBodyCell key={cell.id} cell={cell} instance={instance} pane="left" />
+                    ))}
+                    <Box
+                      aria-hidden
+                      style={{
+                        background: "var(--color-border)",
+                        bottom: 0,
+                        pointerEvents: "none",
+                        position: "absolute",
+                        right: 0,
+                        top: 0,
+                        width: 1,
+                        zIndex: 30,
+                      }}
+                    />
+                  </Box>
+                ) : null}
+
+                <Box
+                  style={{
+                    height: virtualRow.size,
+                    left: leftWidth,
+                    position: "absolute",
+                    top: 0,
+                    width: centerContentWidth,
+                  }}
+                >
+                  {row
+                    .getCenterVisibleCells()
+                    .filter((cell) => virtualCenterColumnIds.has(cell.column.id))
+                    .map((cell) => (
+                      <TableBodyCell key={cell.id} cell={cell} instance={instance} pane="center" />
+                    ))}
                 </Box>
-              ) : null}
-            </TableRowBand>
-          );
-        })}
+
+                {hasDetail ? (
+                  <Box
+                    style={{
+                      background: "color-mix(in oklab, var(--color-muted) 20%, transparent)",
+                      borderTop: "1px solid var(--color-border)",
+                      color: "var(--color-muted-foreground)",
+                      height: detailRowHeight,
+                      left: 0,
+                      padding: "0.5rem 0.75rem",
+                      position: "absolute",
+                      top: rowHeight,
+                      width: contentWidth,
+                      zIndex: 40,
+                    }}
+                  >
+                    test
+                  </Box>
+                ) : null}
+
+                {rightWidth > 0 ? (
+                  <Box
+                    style={{
+                      background: "var(--row-bg)",
+                      height: "100%",
+                      marginLeft: "auto",
+                      position: "sticky",
+                      right: 0,
+                      width: rightWidth,
+                      zIndex: 20,
+                    }}
+                  >
+                    {row.getRightVisibleCells().map((cell) => (
+                      <TableBodyCell key={cell.id} cell={cell} instance={instance} pane="right" />
+                    ))}
+                    <Box
+                      aria-hidden
+                      style={{
+                        background: "var(--color-border)",
+                        bottom: 0,
+                        left: 0,
+                        pointerEvents: "none",
+                        position: "absolute",
+                        top: 0,
+                        width: 1,
+                        zIndex: 30,
+                      }}
+                    />
+                  </Box>
+                ) : null}
+              </TableRowBand>
+            );
+          })}
+        </Box>
       </Box>
+      <TableSelectionOverviewRuler
+        rowCount={visibleRows.length}
+        selectedRowIndexes={selectedRowIndexes}
+        tableHeaderHeight={tableHeaderHeight}
+        viewportHeight={viewportHeight}
+      />
     </Box>
   );
 }

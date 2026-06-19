@@ -1,5 +1,6 @@
 import { ActionIcon, Box } from "@mantine/core";
-import type { ColumnDef, Row, RowData, Table } from "@tanstack/react-table";
+import type { RowData } from "@tanstack/react-table";
+import type { TableRow, TanstabilColumnDef, TanstabilTable } from "../table-types";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -8,9 +9,8 @@ import {
   MinusIcon,
   PlusIcon,
 } from "lucide-react";
-import type { VantageFeatures } from "../use-vantage-table";
 
-function ExpandButton<TData extends RowData>({ row }: { row: Row<VantageFeatures, TData> }) {
+function ExpandButton<TData extends RowData>({ row }: { row: TableRow<TData> }) {
   const isGroupedRow = row.getIsGrouped();
   const isDetailRow = row.getCanExpand() && !isGroupedRow;
   const isExpanded = row.getIsExpanded();
@@ -38,11 +38,7 @@ function ExpandButton<TData extends RowData>({ row }: { row: Row<VantageFeatures
   );
 }
 
-function ExpandAllButton<TData extends RowData>({
-  table,
-}: {
-  table: Table<VantageFeatures, TData>;
-}) {
+function ExpandAllButton<TData extends RowData>({ table }: { table: TanstabilTable<TData> }) {
   const isAllExpanded = table.getIsAllRowsExpanded();
 
   return (
@@ -59,7 +55,7 @@ function ExpandAllButton<TData extends RowData>({
 
 export function createExpandColumn<TData extends RowData>(
   depth: number,
-): ColumnDef<VantageFeatures, TData> {
+): TanstabilColumnDef<TData> {
   return {
     id: "expand",
     size: 28 + 12 + 12 + depth * 12,

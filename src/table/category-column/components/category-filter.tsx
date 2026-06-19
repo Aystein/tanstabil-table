@@ -4,7 +4,6 @@ import { useCanvas } from "@/hooks/use-canvas";
 import { useFrameEffect } from "@/hooks/use-frame-effect";
 import type { RowData } from "@tanstack/react-table";
 import { assertIsCategoryColumn } from "../types";
-import type { CategoryColumn } from "../types";
 import { drawCategoryFilterHistogram } from "./category-filter-canvas";
 import { CategoryFilterHoverLayer } from "./category-filter-hover-layer";
 import { useCategoryFilterModel } from "./use-category-filter-model";
@@ -16,7 +15,6 @@ export function CategoryFilter<TData extends RowData>({
   height,
 }: FilterProps<TData>) {
   assertIsCategoryColumn(column);
-  const categoryColumn: CategoryColumn<TData> = column;
 
   const { ref, pixelWidth, pixelHeight, context } = useCanvas();
   const {
@@ -38,7 +36,7 @@ export function CategoryFilter<TData extends RowData>({
     showLabels,
     totalUniqueValues,
   } = useCategoryFilterModel({
-    column: categoryColumn,
+    column,
     height,
     width,
   });
@@ -114,9 +112,8 @@ export function CategoryFilter<TData extends RowData>({
           ? histogram.map(({ category }) => (
               <Text
                 key={category.value ?? "__missing"}
-                c="var(--color-accent-foreground)"
                 px={2}
-                size="10px"
+                fz={10}
                 ta="center"
                 title={category.label}
                 truncate

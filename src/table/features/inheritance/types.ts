@@ -1,9 +1,11 @@
-import type { VantageFeatures } from "@/table/use-vantage-table";
+import type {
+  TanstabilColumn,
+  TanstabilColumnDef,
+  TanstabilTable_Internal,
+} from "@/table/table-types";
 import type {
   CellData,
   CellContext,
-  Column,
-  ColumnDef,
   ColumnDefTemplate,
   FilterFn,
   RowData,
@@ -14,23 +16,19 @@ import type {
 import type { Virtualizer } from "@tanstack/react-virtual";
 import type { JSX, RefObject } from "react";
 
-export interface CoreColumn<
+export type FeaturedColumn<
   TData extends RowData,
-  TColumnDef extends ColumnDef<VantageFeatures, TData, TValue> = ColumnDef<
-    VantageFeatures,
-    TData,
-    any
-  >,
+  TColumnDef extends TanstabilColumnDef<TData, TValue>,
   TFeature = unknown,
   TValue = unknown,
-> extends Column<VantageFeatures, TData, TValue> {
+> = TanstabilColumn<TData, TValue> & {
   _feature?: TFeature;
   feature: () => TFeature;
 
   columnDef: TColumnDef;
-}
+};
 
-export type TypedColumnDef<
+export type FeaturedColumnDef<
   TData extends RowData,
   TType extends string,
   TFeature,
@@ -38,22 +36,22 @@ export type TypedColumnDef<
 > = {
   columnType: TType;
   featureFactory?: (
-    table: Table_Internal<VantageFeatures, TData>,
-    column: Column<VantageFeatures, TData, TValue>,
+    table: TanstabilTable_Internal<TData>,
+    column: TanstabilColumn<TData, TValue>,
   ) => TFeature;
-} & ColumnDef<VantageFeatures, TData, TValue>;
+} & TanstabilColumnDef<TData, TValue>;
 
-export type TypedColumnTypes<
+export type FeaturedTypes<
   TData extends RowData,
   TType extends string,
   TFeature,
   TValue extends CellData = CellData,
   TColumnDefExtension extends object = {},
 > = {
-  def: TypedColumnDef<TData, TType, TFeature, TValue> & TColumnDefExtension;
-  column: CoreColumn<
+  def: FeaturedColumnDef<TData, TType, TFeature, TValue> & TColumnDefExtension;
+  column: FeaturedColumn<
     TData,
-    TypedColumnDef<TData, TType, TFeature, TValue> & TColumnDefExtension,
+    FeaturedColumnDef<TData, TType, TFeature, TValue> & TColumnDefExtension,
     TFeature,
     TValue
   >;
@@ -63,14 +61,15 @@ export interface ColumnMenuContext {
   openBinningDialog?: () => void;
 }
 
-export interface Column_TypedColumn {
+export interface Column_Inheritance {
   _feature?: unknown;
-  // feature: () => unknown;
+  // This needs to be unknown or TS will create an overload!
+  feature: unknown;
 
   getCoreUniqueValues: () => Map<any, number>;
 }
 
-export interface ColumnDef_TypedColumn<
+export interface ColumnDef_Inheritance<
   TFeatures extends TableFeatures,
   TData extends RowData,
   TValue extends CellData,
@@ -79,7 +78,7 @@ export interface ColumnDef_TypedColumn<
 
   featureFactory?: (
     table: Table_Internal<TFeatures, TData>,
-    column: Column<TFeatures, TData, TValue>,
+    column: TanstabilColumn<TData, TValue>,
   ) => any;
 
   globalFilterFn?: FilterFn<TFeatures, RowData>;
@@ -87,8 +86,8 @@ export interface ColumnDef_TypedColumn<
   groupedCell?: ColumnDefTemplate<CellContext<TFeatures, TData, TValue>>;
 
   renderColumnMenuItems?: (
-    table: Table_Internal<VantageFeatures, RowData>,
-    column: Column<VantageFeatures, RowData>,
+    table: TanstabilTable_Internal<RowData>,
+    column: TanstabilColumn<TData, TValue>,
     context: ColumnMenuContext,
   ) => JSX.Element | null;
 
@@ -96,21 +95,21 @@ export interface ColumnDef_TypedColumn<
   cellPadding?: number;
 }
 
-export interface Table_TypedColumn {
+export interface Table_Inheritance {
   getRowSelectionIds: () => string[];
 }
 
-export interface TableOptions_TypedColumn {
+export interface TableOptions_Inheritance {
   rowVirtualizerRef: RefObject<Virtualizer<HTMLDivElement, Element>>;
 }
 
 declare module "@tanstack/react-table" {
   interface Plugins {
-    typedColumnFeature: TableFeature;
+    inheritanceFeature: TableFeature;
   }
 
   interface Column_FeatureMap<TFeatures extends TableFeatures, TData extends RowData> {
-    typedColumnFeature: Column_TypedColumn;
+    inheritanceFeature: Column_Inheritance;
   }
 
   interface ColumnDef_FeatureMap<
@@ -118,14 +117,14 @@ declare module "@tanstack/react-table" {
     TData extends RowData,
     TValue extends CellData,
   > {
-    typedColumnFeature: ColumnDef_TypedColumn<TFeatures, TData, TValue>;
+    inheritanceFeature: ColumnDef_Inheritance<TFeatures, TData, TValue>;
   }
 
   interface TableOptions_FeatureMap<TFeatures extends TableFeatures, TData extends RowData> {
-    typedColumnFeature: TableOptions_TypedColumn;
+    inheritanceFeature: TableOptions_Inheritance;
   }
 
   interface Table_FeatureMap<TFeatures extends TableFeatures, TData extends RowData> {
-    typedColumnFeature: Table_TypedColumn;
+    inheritanceFeature: Table_Inheritance;
   }
 }

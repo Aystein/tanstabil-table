@@ -1,22 +1,21 @@
 import type { RowData } from "@tanstack/react-table";
-import type { CoreColumn, TypedColumnDef } from "../features/core-feature/types";
-import type { CategoryColumnDef } from "../category-column/types";
+import type { FeaturedColumn, FeaturedColumnDef } from "../features/inheritance/types";
 import type { CategoricalArrayFeatureShape } from "../categorical-array-column/types";
 
 export type ClusterFeatureShape = {
   assignToCluster: (rowIds: string[], label: string) => void;
 } & CategoricalArrayFeatureShape;
 
-export type ClusterColumnDef<TData extends RowData> = TypedColumnDef<
+export type ClusterColumnDef<TData extends RowData> = FeaturedColumnDef<
   TData,
   "cluster",
   ClusterFeatureShape,
   string[] | undefined
 >;
 
-export interface ClusterColumn<TData extends RowData> extends CoreColumn<
+export interface ClusterColumn<TData extends RowData> extends FeaturedColumn<
   TData,
-  CategoryColumnDef<TData>,
+  ClusterColumnDef<TData>,
   ClusterFeatureShape,
   string[] | undefined
 > {}

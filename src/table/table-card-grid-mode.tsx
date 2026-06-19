@@ -1,11 +1,11 @@
 import { Badge, Box, Checkbox, Group, Text } from "@mantine/core";
-import { flexRender, type Column, type RowData } from "@tanstack/react-table";
+import { flexRender, type RowData } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { GridTableOptions } from "./table-grid-cell";
-import type { TableInstance, TableRow } from "./table-types";
+import type { TableInstance, TableRow, TanstabilColumn } from "./table-types";
 
-function getColumnLabel<TData extends RowData>(column: Column<any, TData, unknown>) {
+function getColumnLabel<TData extends RowData>(column: TanstabilColumn<TData>) {
   return typeof column.columnDef.header === "string" ? column.columnDef.header : column.id;
 }
 
@@ -16,7 +16,7 @@ function GridFilterCard<TData extends RowData>({
   instance,
   width,
 }: {
-  column: Column<any, TData, unknown>;
+  column: TanstabilColumn<TData>;
   filterHeight: number;
   isFiltered: boolean;
   instance: TableInstance<TData>;
@@ -162,7 +162,7 @@ function GridCard<TData extends RowData>({
 }: {
   cardHeight: number;
   cardWidth: number;
-  columns: Column<any, TData, unknown>[];
+  columns: TanstabilColumn<TData>[];
   gridCell: GridTableOptions<TData>["gridCell"];
   instance: TableInstance<TData>;
   left: number;

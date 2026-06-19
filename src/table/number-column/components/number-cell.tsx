@@ -1,6 +1,6 @@
-import type { CellContext, RowData } from "@tanstack/react-table";
+import type { RowData } from "@tanstack/react-table";
 import type { CellRenderer } from "../../features/cell-visualization/types";
-import type { VantageFeatures } from "@/table/use-vantage-table";
+import type { TanstabilCellContext } from "@/table/table-types";
 import type { CellValue } from "../types";
 import { assertIsNumberColumn } from "../typeguards";
 
@@ -14,15 +14,13 @@ export function NumberCell<TData extends RowData>({
   getValue,
   table,
   column,
-}: CellContext<VantageFeatures, TData, CellValue>) {
+}: TanstabilCellContext<TData, CellValue>) {
   assertIsNumberColumn(column);
 
   const value = getValue();
   const feature = column.feature();
-  const columnWidth = column.getSize();
   const cellPadding = table.atoms.cellPadding.get();
   const scale = feature.getColorScale();
-  const rowHeight = table.atoms.rowHeight.get();
 
   const domain = feature.getDomain();
 
@@ -47,18 +45,21 @@ export function NumberCell<TData extends RowData>({
   }
 
   return (
-    <div style={{ height: "100%", position: "relative", width: "100%" }}>
-      <svg style={{ height: "100%", position: "absolute", width: "100%" }}>
-        <rect fill={color} x={0} y={0} width={columnWidth} height={rowHeight} />
-      </svg>
-
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        paddingInline: cellPadding,
+        backgroundColor: color,
+        alignContent: "center",
+        textAlign: "right",
+      }}
+    >
       <div
         style={{
-          height: "100%",
-          position: "absolute",
-          textAlign: "right",
-          paddingInline: cellPadding,
-          width: "100%",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
         }}
       >
         {numberFormatter.format(value)}

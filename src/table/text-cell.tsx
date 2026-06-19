@@ -1,16 +1,11 @@
-import type { CellContext, RowData } from "@tanstack/react-table";
+import type { RowData } from "@tanstack/react-table";
 import { Text } from "@mantine/core";
-import type { VantageFeatures } from "./use-vantage-table";
 import type { CellRenderer } from "./features/cell-visualization/types";
+import type { TanstabilCellContext } from "./table-types";
 
-const centeredTextStyle = {
-  alignItems: "center",
-  display: "flex",
-  height: "100%",
-  lineHeight: "inherit",
-} as const;
+const centeredTextStyle = {} as const;
 
-export function TextCell<TData extends RowData>({ getValue }: CellContext<VantageFeatures, TData>) {
+export function TextCell<TData extends RowData>({ getValue }: TanstabilCellContext<TData>) {
   const value = getValue();
   return (
     <Text size="sm" style={centeredTextStyle} truncate>
@@ -19,9 +14,7 @@ export function TextCell<TData extends RowData>({ getValue }: CellContext<Vantag
   );
 }
 
-export function TextSummaryCell<TData extends RowData>({
-  getValue,
-}: CellContext<VantageFeatures, TData>) {
+export function TextSummaryCell<TData extends RowData>({ getValue }: TanstabilCellContext<TData>) {
   const value = getValue();
 
   return (

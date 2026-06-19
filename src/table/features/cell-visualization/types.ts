@@ -1,34 +1,28 @@
-import type { VantageFeatures } from "@/table/use-vantage-table";
 import type {
-  CellContext,
   CellData,
-  Column,
   OnChangeFn,
-  ReactTable,
   RowData,
   TableFeature,
   TableFeatures,
   Updater,
 } from "@tanstack/react-table";
+import type { TableInstance, TanstabilCellContext, TanstabilColumn } from "@/table/table-types";
 import type { ReactNode } from "react";
 
 export type CellVisualizationState = Record<string, string>;
 export type SummaryVisualizationState = Record<string, string>;
 
-export interface CellRenderer<TFeatures extends TableFeatures = any, TData extends RowData = any> {
-  component: (props: CellContext<TFeatures, TData, any>) => ReactNode;
+export interface CellRenderer<TData extends RowData = any> {
+  component: (props: TanstabilCellContext<TData, any>) => ReactNode;
   id: string;
   name: string;
 }
 
-export type SummaryCellRenderer<
-  TFeatures extends TableFeatures = TableFeatures,
-  TData extends RowData = RowData,
-> = CellRenderer<TFeatures, TData>;
+export type SummaryCellRenderer<TData extends RowData = RowData> = CellRenderer<TData>;
 
 export type FilterProps<TData extends RowData> = {
-  table: ReactTable<VantageFeatures, TData>;
-  column: Column<VantageFeatures, TData>;
+  table: TableInstance<TData>;
+  column: TanstabilColumn<TData>;
   width: number;
   height: number;
 };

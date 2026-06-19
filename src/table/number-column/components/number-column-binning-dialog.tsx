@@ -1,11 +1,11 @@
 import { Button, Group, Modal, Select, Stack, Text, Textarea, TextInput } from "@mantine/core";
 import { useEffect, useState } from "react";
-import type { RowData, Table } from "@tanstack/react-table";
-import type { VantageFeatures } from "@/table/use-vantage-table";
+import type { RowData } from "@tanstack/react-table";
+import type { TanstabilTable } from "@/table/table-types";
 import type { NumberColumn, NumberColumnBinning } from "../types";
 
 function getInitialBinning(
-  table: Table<VantageFeatures, RowData>,
+  table: TanstabilTable<RowData>,
   column: NumberColumn<any>,
 ): NumberColumnBinning {
   return table.atoms.bins.get()[column.id] ?? column.columnDef.bins ?? { mode: "auto" };
@@ -34,7 +34,7 @@ export function NumberColumnBinningDialog({
   open,
   onOpenChange,
 }: {
-  table: Table<VantageFeatures, RowData>;
+  table: TanstabilTable<RowData>;
   column: NumberColumn<any>;
   open: boolean;
   onOpenChange: (open: boolean) => void;

@@ -1,6 +1,6 @@
 import type { RowData } from "@tanstack/react-table";
 import { Text } from "@mantine/core";
-import type { VantageCellContext } from "../table-types";
+import type { TanstabilCellContext } from "../table-types";
 import { assertBooleanColumn } from "./types";
 import type { CellRenderer } from "../features/cell-visualization/types";
 
@@ -15,7 +15,7 @@ export function BooleanCell({
   getValue,
   table,
   column,
-}: VantageCellContext<RowData, boolean | undefined>) {
+}: TanstabilCellContext<RowData, boolean | undefined>) {
   assertBooleanColumn(column);
 
   const value = getValue();

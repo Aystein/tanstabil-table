@@ -1,5 +1,4 @@
-import type { FilterFn, Row } from "@tanstack/react-table";
-import type { VantageFeatures } from "../use-vantage-table";
+import type { TanstabilFilterFn, TanstabilRow } from "../table-types";
 import type { FilterValue } from "./types";
 
 type ResolvedNumberFilterValue =
@@ -40,8 +39,8 @@ function getBrushRange(filterValue: FilterValue | undefined) {
   };
 }
 
-export const numberFilterFn: FilterFn<VantageFeatures, any> = (
-  row: Row<VantageFeatures, any>,
+export const numberFilterFn: TanstabilFilterFn<any> = (
+  row: TanstabilRow<any>,
   columnId: string,
   filterValue: ResolvedNumberFilterValue,
 ) => {

@@ -1,4 +1,5 @@
 import type { Category } from "../types";
+import { getPixelSnappedHistogramBars } from "../../features/histogram/histogram-layout";
 import type { CategoryFilterOptionValue } from "./use-category-filter-model";
 
 export type CategoryHistogramEntry = {
@@ -29,29 +30,29 @@ export function getCategoryHistogramBarGeometry({
   max: number;
   width: number;
 }): CategoryHistogramBarGeometry | undefined {
-  const entry = histogram[index];
-
-  if (entry === undefined || histogram.length === 0) {
+  if (histogram[index] === undefined || histogram.length === 0) {
     return undefined;
   }
 
-  const slotWidth = width / histogram.length;
-  const x0 = Math.round(index * slotWidth);
-  const x1 = Math.round((index + 1) * slotWidth);
-  const x = index === 0 ? x0 : x0 + gap;
-  const barWidth = Math.max(x1 - x, 0);
-  const drawableHeight = Math.max(height - 1, 0);
-  const barHeight = max === 0 ? 0 : Math.round((entry.totalCount / max) * drawableHeight);
+  const bar = getPixelSnappedHistogramBars({
+    desiredGap: gap,
+    entries: histogram,
+    getFiltered: (entry) => entry.filteredCount,
+    getTotal: (entry) => entry.totalCount,
+    height,
+    max,
+    width,
+  })[index];
 
-  if (barWidth === 0 || barHeight === 0) {
+  if (bar === undefined || bar.width === 0 || bar.totalHeight === 0) {
     return undefined;
   }
 
   return {
-    x,
-    y: height - barHeight,
-    width: barWidth,
-    height: barHeight,
+    x: bar.x,
+    y: bar.totalY,
+    width: bar.width,
+    height: bar.totalHeight,
   };
 }
 
@@ -81,31 +82,30 @@ export function drawCategoryFilterHistogram({
     return;
   }
 
-  const slotWidth = pixelWidth / histogram.length;
-  const gap = slotWidth >= 4 ? Math.max(1, Math.round(pixelWidth / Math.max(cssWidth, 1))) : 0;
+  const gap = Math.max(1, Math.round(pixelWidth / Math.max(cssWidth, 1)));
+  const bars = getPixelSnappedHistogramBars({
+    desiredGap: gap,
+    entries: histogram,
+    getFiltered: (entry) => entry.filteredCount,
+    getTotal: (entry) => entry.totalCount,
+    height: pixelHeight,
+    max,
+    minBarWidthForGap: gap * 2,
+    width: pixelWidth,
+  });
 
-  for (const [index, { category, filteredCount }] of histogram.entries()) {
-    const barGeometry = getCategoryHistogramBarGeometry({
-      gap,
-      height: pixelHeight,
-      histogram,
-      index,
-      max,
-      width: pixelWidth,
-    });
+  for (const { entry, filteredHeight, filteredY, totalHeight, totalY, width, x } of bars) {
+    const { category } = entry;
 
-    if (barGeometry === undefined) {
+    if (width === 0 || totalHeight === 0) {
       continue;
     }
 
-    const drawableHeight = Math.max(pixelHeight - 1, 0);
-    const filteredBarHeight = max === 0 ? 0 : Math.round((filteredCount / max) * drawableHeight);
-
     context.fillStyle = category.color;
     context.globalAlpha = 0.2;
-    context.fillRect(barGeometry.x, barGeometry.y, barGeometry.width, barGeometry.height);
+    context.fillRect(x, totalY, width, totalHeight);
 
-    if (filteredBarHeight === 0) {
+    if (filteredHeight === 0) {
       context.globalAlpha = 1;
       continue;
     }
@@ -115,12 +115,7 @@ export function drawCategoryFilterHistogram({
     } else {
       context.globalAlpha = 1;
     }
-    context.fillRect(
-      barGeometry.x,
-      pixelHeight - filteredBarHeight,
-      barGeometry.width,
-      filteredBarHeight,
-    );
+    context.fillRect(x, filteredY, width, filteredHeight);
     context.globalAlpha = 1;
   }
 

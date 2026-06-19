@@ -10,7 +10,7 @@ import {
 } from "@dnd-kit/core";
 import { horizontalListSortingStrategy, SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { Column, RowData } from "@tanstack/react-table";
+import type { RowData } from "@tanstack/react-table";
 import type { VirtualItem } from "@tanstack/react-virtual";
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
@@ -21,6 +21,7 @@ import {
   type PanePosition,
   type TableHeader,
   type TableInstance,
+  type TanstabilColumn,
 } from "./table-types";
 
 type PointerSensorActivator = (typeof PointerSensor.activators)[number];
@@ -28,7 +29,7 @@ type PointerSensorActivatorEvent = Parameters<PointerSensorActivator["handler"]>
 type PointerSensorActivatorOptions = Parameters<PointerSensorActivator["handler"]>[1];
 
 export type VirtualCenterColumn<TData extends RowData> = {
-  column: Column<any, TData, unknown>;
+  column: TanstabilColumn<TData>;
   header: TableHeader<TData>;
   index: number;
 };
@@ -68,7 +69,7 @@ export function getVirtualCenterColumns<TData extends RowData>({
   centerHeaders,
   virtualColumns,
 }: {
-  centerColumns: Column<any, TData, unknown>[];
+  centerColumns: TanstabilColumn<TData>[];
   centerHeaders: TableHeader<TData>[];
   virtualColumns: VirtualItem[];
 }) {

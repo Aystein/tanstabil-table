@@ -73,14 +73,16 @@ function renderCellContent<TData extends RowData>(
   }
 
   return (
-    <Box
+    <div
       style={{
         ...paddingStyle,
         height: "100%",
+        display: "flex",
+        alignItems: "center",
       }}
     >
       <instance.FlexRender cell={cell} />
-    </Box>
+    </div>
   );
 }
 
@@ -135,7 +137,6 @@ export function TableBodyCell<TData extends RowData>({
         fontSize: 14,
         height: instance.atoms.rowHeight.get(),
         left: cell.column.getStart(pane),
-        lineHeight: `${instance.atoms.rowHeight.get()}px`,
         overflow: "hidden",
         position: "absolute",
         top: 0,

@@ -1,9 +1,9 @@
-import type { AccessorColumnDef, FilterFn, RowData } from "@tanstack/react-table";
-import type { VantageFeatures } from "../use-vantage-table";
+import type { RowData } from "@tanstack/react-table";
 import type { BooleanColumnDef } from "./types";
+import type { TanstabilAccessorColumnDef, TanstabilFilterFn } from "../table-types";
 import { booleanCellRenderer } from "./boolean-cell";
 
-const booleanGlobalFilterFn: FilterFn<VantageFeatures, RowData> = (row, columnId, filterValue) => {
+const booleanGlobalFilterFn: TanstabilFilterFn<RowData> = (row, columnId, filterValue) => {
   const value = row.getValue<boolean | undefined>(columnId);
   const normalizedFilter = String(filterValue).trim().toLowerCase();
 
@@ -17,7 +17,7 @@ const booleanGlobalFilterFn: FilterFn<VantageFeatures, RowData> = (row, columnId
 };
 
 export function createBooleanColumnDef<TData extends RowData>(
-  base: AccessorColumnDef<VantageFeatures, TData, boolean | undefined>,
+  base: TanstabilAccessorColumnDef<TData, boolean | undefined>,
 ): BooleanColumnDef<TData> {
   return {
     ...base,

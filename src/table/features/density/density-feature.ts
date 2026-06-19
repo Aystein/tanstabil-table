@@ -32,19 +32,19 @@ export interface Table_Density {
 
 declare module "@tanstack/react-table" {
   interface Plugins {
-    rowHeightFeature: TableFeature;
+    densityFeature: TableFeature;
   }
 
   interface TableState_FeatureMap {
-    rowHeightFeature: TableState_Density;
+    densityFeature: TableState_Density;
   }
 
   interface TableOptions_FeatureMap<TFeatures extends TableFeatures, TData extends RowData> {
-    rowHeightFeature: TableOptions_Density;
+    densityFeature: TableOptions_Density;
   }
 
   interface Table_FeatureMap<TFeatures extends TableFeatures, TData extends RowData> {
-    rowHeightFeature: Table_Density;
+    densityFeature: Table_Density;
   }
 }
 
@@ -66,7 +66,7 @@ export function constructRowHeightTableFeature(): TableFeature {
       };
     },
     constructTableAPIs: (table) => {
-      assignTableAPIs("rowHeightFeature", table, {
+      assignTableAPIs("densityFeature", table, {
         table_setRowHeight: {
           fn: (updater: Updater<RowHeightState>) => table.options.onRowHeightChange?.(updater),
         },

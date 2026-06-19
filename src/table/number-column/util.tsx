@@ -1,4 +1,5 @@
-import type { AccessorFnColumnDef, RowData } from "@tanstack/react-table";
+import type { RowData } from "@tanstack/react-table";
+import type { TanstabilAccessorFnColumnDef } from "../table-types";
 import {
   NumberColumnAggregatedCell,
   numberSummaryCellRenderer,
@@ -8,14 +9,13 @@ import { calculateBoxPlotStats } from "./boxplot";
 import { NumberFilter } from "./components/number-filter";
 import { type CellValue, type NumberColumnDef } from "./types";
 import { createNumberFeature } from "./number-column-def";
-import type { VantageFeatures } from "../use-vantage-table";
 import { Menu } from "@mantine/core";
 import { textCellRenderer, textSummaryCellRenderer } from "../text-cell";
 import { numberCellRenderer } from "./components/number-cell";
 import { numberFilterFn } from "./filter-fn";
 
 export function createNumberColumn<TData extends RowData>(
-  columnDef: AccessorFnColumnDef<VantageFeatures, TData, number | undefined>,
+  columnDef: TanstabilAccessorFnColumnDef<TData, number | undefined>,
 ): NumberColumnDef<TData> {
   return {
     ...columnDef,

@@ -1,10 +1,5 @@
-import {
-  type RowData,
-  type Table_Internal,
-  type Column,
-  type Column_Internal,
-} from "@tanstack/react-table";
-import type { VantageFeatures } from "../use-vantage-table";
+import { type RowData } from "@tanstack/react-table";
+import type { TanstabilColumn, TanstabilTable, TanstabilTable_Internal } from "../table-types";
 import type { ClusterFeatureShape } from "./types";
 import { createCategoryFeature } from "../category-column/category-column-feature";
 import { produce } from "immer";
@@ -27,8 +22,8 @@ export function _clusterLookupTable(clusterGroup: ClusterGroup) {
 }
 
 function _assignToCluster<TData extends RowData>(
-  table: Table_Internal<VantageFeatures, TData>,
-  column: Column_Internal<VantageFeatures, TData>,
+  table: TanstabilTable<TData>,
+  column: TanstabilColumn<TData>,
   rowIds: string[],
   id: string,
 ) {
@@ -73,12 +68,12 @@ function _assignToCluster<TData extends RowData>(
 }
 
 export function createClusterFeature<TData extends RowData>(
-  table: Table_Internal<VantageFeatures, TData>,
-  column: Column<VantageFeatures, TData>,
+  table: TanstabilTable_Internal<TData>,
+  column: TanstabilColumn<TData>,
 ): ClusterFeatureShape {
   return {
     ...createCategoryFeature(table, column),
     assignToCluster: (rowIds: string[], label: string) =>
-      _assignToCluster(table, column, rowIds, label),
+      _assignToCluster(table as unknown as TanstabilTable<TData>, column, rowIds, label),
   };
 }

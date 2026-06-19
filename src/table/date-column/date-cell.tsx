@@ -1,9 +1,10 @@
-import type { CellContext, RowData, TableFeatures } from "@tanstack/react-table";
+import type { RowData } from "@tanstack/react-table";
 import { Text } from "@mantine/core";
 import type { CellRenderer } from "../features/cell-visualization/types";
+import type { TanstabilCellContext } from "../table-types";
 import { assertDateColumn } from "./types";
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+export const defaultDateFormatter = new Intl.DateTimeFormat(undefined, {
   year: "numeric",
   month: "short",
   day: "numeric",
@@ -20,7 +21,7 @@ export function DateCell({
   getValue,
   table,
   column,
-}: CellContext<TableFeatures, RowData, Date | undefined>) {
+}: TanstabilCellContext<RowData, Date | undefined>) {
   assertDateColumn(column);
 
   const value = getValue();
@@ -31,12 +32,12 @@ export function DateCell({
 
   return (
     <Text size="sm" style={centeredTextStyle} truncate>
-      {dateFormatter.format(value)}
+      {defaultDateFormatter.format(value)}
     </Text>
   );
 }
 
-export const dateCellRenderer: CellRenderer<TableFeatures, RowData> = {
+export const dateCellRenderer: CellRenderer<RowData> = {
   component: DateCell,
   id: "date",
   name: "Date",

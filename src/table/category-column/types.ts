@@ -1,6 +1,7 @@
-import type { CoreColumn, TypedColumnDef } from "../features/core-feature/types";
+import type { FeaturedColumn, FeaturedColumnDef } from "../features/inheritance/types";
 import { z } from "zod";
 import type { RowData } from "@tanstack/react-table";
+import { assertColumnOfType, isColumnOfType } from "../typeguards";
 
 export type CategoryCellValue = string | undefined;
 
@@ -35,48 +36,30 @@ export interface CategoryFeatureShape {
   getCategories: () => Category[];
   getValidCategories: () => ValidCategory[];
 
-  getCategoryValues: () => (string | undefined)[];
+  getCategoryValues: () => CategoryCellValue[];
   getValidCategoryValues: () => string[];
-  getColorScale: () => (value: string | undefined) => string;
+  getColorScale: () => (value: CategoryCellValue) => string;
 
-  getValueToCategoryMap: () => Map<string | undefined, Category>;
+  getValueToCategoryMap: () => Map<CategoryCellValue, Category>;
 }
 
-export type CategoryColumnDef<TData extends RowData> = TypedColumnDef<
+export type CategoryColumnDef<TData extends RowData> = FeaturedColumnDef<
   TData,
   "category",
   CategoryFeatureShape
 > &
   CategoryColumnOptions;
 
-export type CategoryColumn<TData extends RowData> = Omit<
-  CoreColumn<TData, CategoryColumnDef<TData>, CategoryFeatureShape>,
-  "columnDef" | "feature"
-> & {
-  columnDef: CategoryColumnDef<TData>;
-  feature: () => CategoryFeatureShape;
-};
-
-export interface CategoryFeatureConstructors {
-  Column: {
-    feature_category: () => CategoryFeatureShape;
-  };
-}
+export type CategoryColumn<TData extends RowData> = FeaturedColumn<
+  TData,
+  CategoryColumnDef<TData>,
+  CategoryFeatureShape
+>;
 
 export function isCategoryColumn(column: unknown): column is CategoryColumn<any> {
-  if (typeof column === "object" && column !== null && "columnDef" in column) {
-    const columnDef = column.columnDef as unknown;
-
-    if (typeof columnDef === "object" && columnDef !== null && "columnType" in columnDef) {
-      return columnDef.columnType === "category";
-    }
-  }
-
-  return false;
+  return isColumnOfType(column, "category");
 }
 
 export function assertIsCategoryColumn(column: unknown): asserts column is CategoryColumn<any> {
-  if (!isCategoryColumn(column)) {
-    throw new Error("Column is not a category column");
-  }
+  assertColumnOfType(column, "category");
 }

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { TypedColumnTypes } from "../features/core-feature/types";
+import type { FeaturedTypes } from "../features/inheritance/types";
 import type { RowData } from "@tanstack/react-table";
 import type { Bin } from "d3";
 
@@ -62,7 +62,7 @@ export type NumberColumnBinning =
       thresholds: number[];
     };
 
-type NumberColumnTypes<TData extends RowData> = TypedColumnTypes<
+type NumberColumnTypes<TData extends RowData> = FeaturedTypes<
   TData,
   "number",
   NumberFeatureShape,

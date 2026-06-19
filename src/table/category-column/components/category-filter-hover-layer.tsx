@@ -1,3 +1,4 @@
+import { getPixelSnappedHistogramBarXLayout } from "../../features/histogram/histogram-layout";
 import type { CategoryHistogramEntry } from "./category-filter-canvas";
 
 export function CategoryFilterHoverLayer({
@@ -19,14 +20,19 @@ export function CategoryFilterHoverLayer({
     return null;
   }
 
-  const slotWidth = width / histogram.length;
-  const gap = slotWidth >= 4 ? 1 : 0;
-  const x0 = Math.round(hoveredCategoryIndex * slotWidth);
-  const x1 = Math.round((hoveredCategoryIndex + 1) * slotWidth);
-  const rectX = hoveredCategoryIndex === 0 ? x0 : x0 + gap;
+  const bar = getPixelSnappedHistogramBarXLayout({
+    count: histogram.length,
+    desiredGap: 1,
+    minBarWidthForGap: 2,
+    width,
+  })[hoveredCategoryIndex];
+
+  if (bar === undefined) {
+    return null;
+  }
+
   const strokeWidth = 3;
   const strokeInset = strokeWidth / 2;
-  const rectWidth = Math.max(x1 - rectX, 0);
 
   return (
     <svg
@@ -48,8 +54,8 @@ export function CategoryFilterHoverLayer({
         height={height}
         stroke="var(--color-foreground)"
         strokeWidth={strokeWidth}
-        width={rectWidth}
-        x={rectX + strokeInset}
+        width={bar.width}
+        x={bar.x + strokeInset}
         y={strokeInset}
       />
     </svg>

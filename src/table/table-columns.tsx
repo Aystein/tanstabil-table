@@ -1,23 +1,13 @@
-import { type ColumnDef } from "@tanstack/react-table";
+import type { TanstabilColumnDef } from "./table-types";
 import { createTextColumnDef } from "./text-column/utils";
-import type { VantageFeatures } from "./use-vantage-table";
 import type { Pokemon } from "@/data";
 import { createNumberColumn } from "./number-column/util";
-import { SpriteCell } from "./sprite-cell";
 import { createCategoricalArrayColumn } from "./categorical-array-column/util";
 import { createBooleanColumnDef } from "./boolean-column";
 import { createDateColumnDef } from "./date-column";
 import { createCategoryColumnDef } from "./category-column/utils";
 
-export const columns: ColumnDef<VantageFeatures, Pokemon, any>[] = [
-  {
-    id: "sprite",
-    accessorFn: (row) => row.pokedex_number,
-    header: "Sprite",
-    cell: SpriteCell,
-    enableGrouping: false,
-    size: 80,
-  },
+export const columns: TanstabilColumnDef<Pokemon, any>[] = [
   createTextColumnDef({
     id: "id",
     accessorFn: (_, index) => index,
@@ -34,7 +24,7 @@ export const columns: ColumnDef<VantageFeatures, Pokemon, any>[] = [
   }),
   createDateColumnDef({
     id: "date",
-    accessorFn: (row) => new Date(new Date().setDate(Math.round(Math.random() * 25) + 1)),
+    accessorFn: () => new Date(new Date().setDate(Math.round(Math.random() * 25) + 1)),
     header: "Date",
   }),
   createTextColumnDef({

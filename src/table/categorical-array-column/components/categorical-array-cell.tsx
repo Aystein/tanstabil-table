@@ -1,10 +1,9 @@
 import { isClusterColumn } from "@/table/cluster-column/types";
-import type { VantageFeatures } from "@/table/use-vantage-table";
-import type { RowData, CellContext } from "@tanstack/react-table";
+import type { TanstabilCellContext } from "@/table/table-types";
+import type { RowData } from "@tanstack/react-table";
 import { isCategoricalArrayColumn } from "../types";
 import { UpsetGlyph } from "./upset-glyph";
 
-const maxVisibleCategories = 8;
 const categoryThreshold = 20;
 
 function normalizeCellValue(value: unknown): string[] {
@@ -15,19 +14,10 @@ function normalizeCellValue(value: unknown): string[] {
   return [...new Set(value.filter((entry): entry is string => typeof entry === "string"))];
 }
 
-type DomainLookupTable = {
-  getCoreRowModel: () => {
-    flatRows: Array<{
-      getValue: (columnId: string) => unknown;
-    }>;
-  };
-};
-
 export function CategoricalArrayColumnCell<TData extends RowData>({
   getValue,
-  table,
   column,
-}: CellContext<VantageFeatures, TData, string[] | undefined>) {
+}: TanstabilCellContext<TData, string[] | undefined>) {
   if (!isCategoricalArrayColumn(column) && !isClusterColumn(column)) {
     return null;
   }
@@ -45,9 +35,6 @@ export function CategoricalArrayColumnCell<TData extends RowData>({
       </span>
     );
   }
-
-  const visibleValues = values.filter((value) => categories.includes(value));
-  const overflowCount = values.length - visibleValues.length;
 
   return <UpsetGlyph activeCategories={value} categories={categories} />;
 }

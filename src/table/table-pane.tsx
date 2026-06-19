@@ -23,18 +23,6 @@ function getRowSurfaceStyle<TData extends RowData>(row: TableRow<TData>): CSSPro
   } as CSSProperties;
 }
 
-function getRowSelectionInset<TData extends RowData>(row: TableRow<TData>) {
-  if (row.getIsSelected()) {
-    return "inset 3px 0 0 var(--color-primary)";
-  }
-
-  if (row.getIsSomeSelected() || row.getIsAllSubRowsSelected()) {
-    return "inset 3px 0 0 color-mix(in oklab, var(--color-background) 35%, var(--color-primary) 65%)";
-  }
-
-  return undefined;
-}
-
 export function TableRowBand<TData extends RowData>({
   children,
   top,
@@ -55,7 +43,6 @@ export function TableRowBand<TData extends RowData>({
         ...getRowSurfaceStyle(row),
         background: "var(--row-bg)",
         borderBottom: "1px solid var(--color-border)",
-        boxShadow: getRowSelectionInset(row),
         display: "flex",
         height: virtualRow.size,
         position: "absolute",

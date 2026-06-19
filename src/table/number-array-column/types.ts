@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { RowData } from "@tanstack/react-table";
-import type { TypedColumnTypes } from "../features/core-feature/types";
+import type { FeaturedTypes } from "../features/inheritance/types";
 
 export const CellValueSchema = z.array(z.number()).optional();
 
@@ -18,7 +18,7 @@ export type NumberArrayFeatureShape = {
   getColorScale: () => (value: number | undefined) => string;
 };
 
-type NumberArrayColumnTypes<TData extends RowData> = TypedColumnTypes<
+type NumberArrayColumnTypes<TData extends RowData> = FeaturedTypes<
   TData,
   "number-array",
   NumberArrayFeatureShape,

@@ -4,7 +4,7 @@ import { columns } from "./table-columns";
 import { DummySprite } from "./sprite-cell";
 import { TableGrid } from "./table-grid";
 import { useTableAiTools } from "./use-table-ai-tools";
-import { useVantageTable, vantageFeatures } from "./use-vantage-table";
+import { useVantageTable, vantageFeatures } from "./hook/use-vantage-table";
 import { useRef, useEffect, useState } from "react";
 import type { TableVirtualizer } from "./table-types";
 import type { GridCellProps } from "./table-grid-cell";

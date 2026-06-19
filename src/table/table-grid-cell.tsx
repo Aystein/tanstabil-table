@@ -1,10 +1,10 @@
 import { Badge, Box, Group, Text } from "@mantine/core";
-import type { Column, RowData } from "@tanstack/react-table";
+import type { RowData } from "@tanstack/react-table";
 import type { ReactNode } from "react";
-import type { TableInstance, TableRow } from "./table-types";
+import type { TableInstance, TableRow, TanstabilColumn } from "./table-types";
 
 export type GridCellProps<TData extends RowData> = {
-  columns: Column<any, TData, unknown>[];
+  columns: TanstabilColumn<TData>[];
   height: number;
   row: TableRow<TData>;
   table: TableInstance<TData>;
@@ -20,7 +20,7 @@ export type GridTableOptions<TData extends RowData> = {
   gridCell?: GridCellRenderer<TData>;
 };
 
-function getColumnLabel<TData extends RowData>(column: Column<any, TData, unknown>) {
+function getColumnLabel<TData extends RowData>(column: TanstabilColumn<TData>) {
   return typeof column.columnDef.header === "string" ? column.columnDef.header : column.id;
 }
 

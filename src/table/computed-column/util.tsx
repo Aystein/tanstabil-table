@@ -1,11 +1,11 @@
-import type { AccessorFnColumnDef, RowData } from "@tanstack/react-table";
+import type { RowData } from "@tanstack/react-table";
+import type { TanstabilAccessorFnColumnDef } from "../table-types";
 import { Menu } from "@mantine/core";
-import type { VantageFeatures } from "../use-vantage-table";
 import type { NumberColumnDef } from "../number-column/types";
 import { createNumberColumn } from "../number-column/util";
 
 export function createComputedNumberColumn<TData extends RowData>(
-  columnDef: AccessorFnColumnDef<VantageFeatures, TData, number | undefined>,
+  columnDef: TanstabilAccessorFnColumnDef<TData, number | undefined>,
 ): NumberColumnDef<TData> {
   const numberColumn = createNumberColumn<TData>(columnDef);
   const renderNumberColumnMenuItems = numberColumn.renderColumnMenuItems;

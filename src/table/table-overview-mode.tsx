@@ -1,5 +1,5 @@
 import { Box, Tooltip } from "@mantine/core";
-import type { Column, RowData } from "@tanstack/react-table";
+import type { RowData } from "@tanstack/react-table";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { getCategoricalColor as getFallbackCategoricalColor } from "./category-column/category-column-feature";
 import type { CategoryFeatureShape } from "./category-column/types";
@@ -11,10 +11,11 @@ import {
   type OverviewRowHeight,
   type TableInstance,
   type TableRow,
+  type TanstabilColumn,
 } from "./table-types";
 
 type OverviewColumn<TData extends RowData> = {
-  column: Column<any, TData, unknown>;
+  column: TanstabilColumn<TData>;
   kind: "numeric" | "categorical" | "utility";
   left: number;
   pane: "center" | "pinned";
@@ -28,7 +29,7 @@ type OverviewTooltipState = {
   y: number;
 };
 
-function getColumnFeature<TData extends RowData>(column: Column<any, TData, unknown>) {
+function getColumnFeature<TData extends RowData>(column: TanstabilColumn<TData>) {
   const featureColumn = column as typeof column & {
     feature?: () => unknown;
   };
@@ -64,7 +65,7 @@ function hasCategoricalColorScale(
 }
 
 function getOverviewCategoricalColor<TData extends RowData>(
-  column: Column<any, TData, unknown>,
+  column: TanstabilColumn<TData>,
   value: unknown,
 ) {
   const category = getCategoricalValue(value);
@@ -93,7 +94,7 @@ function hasNumberColorScale(
 }
 
 function getOverviewNumberColor<TData extends RowData>(
-  column: Column<any, TData, unknown>,
+  column: TanstabilColumn<TData>,
   value: number,
 ) {
   const feature = getColumnFeature(column);
@@ -180,7 +181,7 @@ function getNumberDomain<TData extends RowData>(
   return min === Infinity || max === -Infinity ? undefined : [min, max];
 }
 
-function getOverviewColumnKind<TData extends RowData>(column: Column<any, TData, unknown>) {
+function getOverviewColumnKind<TData extends RowData>(column: TanstabilColumn<TData>) {
   const columnType = column.columnDef.columnType;
 
   if (columnType === "number") {
@@ -199,7 +200,7 @@ function getOverviewColumns<TData extends RowData>({
   leftWidth,
   rows,
 }: {
-  centerColumns: Column<any, TData, unknown>[];
+  centerColumns: TanstabilColumn<TData>[];
   leftWidth: number;
   rows: TableRow<TData>[];
 }) {
@@ -624,6 +625,7 @@ export function OverviewMode<TData extends RowData>({
     viewportHeight,
     tableHeaderHeight + visibleRows.length * overviewRowHeight,
   );
+
   const overviewCanvasHeight = Math.max(1, viewportHeight - tableHeaderHeight);
   const contentWidth = Math.max(totalWidth, viewportWidth);
   const centerContentWidth = Math.max(centerWidth, contentWidth - leftWidth - rightWidth);

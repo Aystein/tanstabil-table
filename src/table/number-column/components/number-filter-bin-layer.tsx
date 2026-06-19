@@ -1,46 +1,40 @@
 import { useMemo } from "react";
-import type { Bin, ScaleLinear } from "d3";
+import type { Bin } from "d3";
+import type { PixelSnappedBarX } from "../../features/histogram/histogram-layout";
 import { getNumberBinId } from "../number-column-def";
 
 export function NumberFilterBinLayer({
+  cssBarLayout,
   bins,
-  binDomain,
   histogramHeight,
   hoveredBinIndex,
   selectedBinIds,
-  xScale,
 }: {
+  cssBarLayout: PixelSnappedBarX[];
   bins: Bin<number, number>[];
-  binDomain: [number, number];
   histogramHeight: number;
   hoveredBinIndex: number | undefined;
   selectedBinIds: string[];
-  xScale: ScaleLinear<number, number>;
 }) {
   const selectedBinIdSet = useMemo(() => new Set(selectedBinIds), [selectedBinIds]);
-  const hoveredBin = hoveredBinIndex === undefined ? undefined : bins[hoveredBinIndex];
-  const hoveredBinX = hoveredBin === undefined ? 0 : xScale(hoveredBin.x0 ?? binDomain[0]);
-  const hoveredBinWidth =
-    hoveredBin === undefined ? 0 : Math.max(xScale(hoveredBin.x1 ?? binDomain[1]) - hoveredBinX, 0);
+  const hoveredBar = hoveredBinIndex === undefined ? undefined : cssBarLayout[hoveredBinIndex];
 
   return (
     <>
-      {bins.map((bin) => {
+      {bins.map((bin, index) => {
         const binId = getNumberBinId(bin);
+        const bar = cssBarLayout[index];
 
-        if (!selectedBinIdSet.has(binId)) {
+        if (!selectedBinIdSet.has(binId) || bar === undefined) {
           return null;
         }
-
-        const x = xScale(bin.x0 ?? binDomain[0]);
-        const binWidth = Math.max(xScale(bin.x1 ?? binDomain[1]) - x, 0);
 
         return (
           <rect
             key={binId}
-            x={x + 0.5}
+            x={bar.x + 0.5}
             y={0.5}
-            width={Math.max(binWidth - 1, 0)}
+            width={Math.max(bar.width - 1, 0)}
             height={Math.max(histogramHeight - 1, 0)}
             fill="color-mix(in oklab, var(--color-primary) 15%, transparent)"
             pointerEvents="none"
@@ -49,12 +43,11 @@ export function NumberFilterBinLayer({
           />
         );
       })}
-      {hoveredBin === undefined ? null : (
+      {hoveredBar === undefined ? null : (
         <rect
-          id="test"
-          x={hoveredBinX + 0.5}
+          x={hoveredBar.x + 0.5}
           y={0.5}
-          width={Math.max(hoveredBinWidth - 1, 0)}
+          width={Math.max(hoveredBar.width - 1, 0)}
           height={Math.max(histogramHeight - 1, 0)}
           fill="transparent"
           pointerEvents="none"

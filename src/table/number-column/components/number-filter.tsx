@@ -1,8 +1,8 @@
-import type { RowData, ReactTable } from "@tanstack/react-table";
+import type { RowData } from "@tanstack/react-table";
+import type { TableInstance } from "@/table/table-types";
 import { useMemo } from "react";
 import { HoverCard, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import type { FilterProps } from "@/table/features/cell-visualization/types";
-import type { VantageFeatures } from "../../use-vantage-table";
 import { isNumberColumn } from "../typeguards";
 import type { NumberColumn } from "../types";
 import {
@@ -10,6 +10,7 @@ import {
   getNumberHistogramEntries,
   getNumberHistogramMax,
   NumberHistogramPlot,
+  useNumberHistogramBarLayout,
   useNumberHistogramScale,
 } from "./number-histogram";
 import { NumberFilterBinLayer } from "./number-filter-bin-layer";
@@ -27,14 +28,7 @@ export function NumberFilter<TData extends RowData>({
     return null;
   }
 
-  return (
-    <NumberColumnHistogram
-      column={column as NumberColumn<TData>}
-      height={height}
-      table={table}
-      width={width}
-    />
-  );
+  return <NumberColumnHistogram column={column} height={height} table={table} width={width} />;
 }
 
 function NumberColumnHistogram<TData extends RowData>({
@@ -43,7 +37,7 @@ function NumberColumnHistogram<TData extends RowData>({
   width,
   height,
 }: {
-  table: ReactTable<VantageFeatures, TData>;
+  table: TableInstance<TData>;
   column: NumberColumn<TData>;
   width: number;
   height: number;
@@ -72,6 +66,7 @@ function NumberColumnHistogram<TData extends RowData>({
   const labelHeight = 14;
   const histogramHeight = height - labelHeight;
   const cssXScale = useNumberHistogramScale({ binDomain, width });
+  const cssBarLayout = useNumberHistogramBarLayout({ binCount: bins.length, width });
   const {
     brushMin,
     brushWidth,
@@ -89,6 +84,7 @@ function NumberColumnHistogram<TData extends RowData>({
     binDomain,
     bins,
     column,
+    cssBarLayout,
     xScale: cssXScale,
   });
   const hoveredBin = hoveredBinIndex === undefined ? undefined : bins[hoveredBinIndex];
@@ -142,12 +138,11 @@ function NumberColumnHistogram<TData extends RowData>({
                 viewBox={`0 0 ${width} ${histogramHeight}`}
               >
                 <NumberFilterBinLayer
+                  cssBarLayout={cssBarLayout}
                   bins={bins}
-                  binDomain={binDomain}
                   histogramHeight={histogramHeight}
                   hoveredBinIndex={hoveredBinIndex}
                   selectedBinIds={selectedBinIds}
-                  xScale={cssXScale}
                 />
                 {brushMin === undefined ? null : (
                   <>
@@ -192,10 +187,10 @@ function NumberColumnHistogram<TData extends RowData>({
             height: labelHeight,
           }}
         >
-          <Text c="var(--color-accent-foreground)" size="10px">
+          <Text c="var(--color-accent-foreground)" fz={10}>
             {formatter.format(binDomain[0])}
           </Text>
-          <Text c="var(--color-accent-foreground)" size="10px">
+          <Text c="var(--color-accent-foreground)" fz={10}>
             {formatter.format(binDomain[1])}
           </Text>
         </div>

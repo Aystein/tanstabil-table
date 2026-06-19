@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { useCanvas } from "@/hooks/use-canvas";
 import { useFrameEffect } from "@/hooks/use-frame-effect";
+import { getPixelSnappedHistogramBarXLayout } from "../../features/histogram/histogram-layout";
+import type { PixelSnappedBarX } from "../../features/histogram/histogram-layout";
 import { getBinIndexForValue } from "./use-number-filter-brush";
 
 export type NumberHistogramEntry = {
@@ -77,7 +79,11 @@ export function NumberHistogramPlot({
   max?: number;
   width: number;
 }) {
-  const { ref, width: canvasWidth, pixelWidth, pixelHeight, context } = useCanvas();
+  const { ref, pixelWidth, pixelHeight, context } = useCanvas();
+  const pixelBarLayout = useNumberHistogramBarLayout({
+    binCount: histogram.length,
+    width: pixelWidth,
+  });
 
   useFrameEffect(() => {
     if (context === null || pixelWidth === 0 || pixelHeight === 0) {
@@ -86,15 +92,15 @@ export function NumberHistogramPlot({
 
     drawNumberHistogram({
       binDomain,
-      canvasWidth,
       colorScale,
       context,
       histogram,
       max,
+      pixelBarLayout,
       pixelHeight,
       pixelWidth,
     });
-  }, [context, canvasWidth, pixelWidth, pixelHeight, histogram, binDomain, max, colorScale]);
+  }, [context, pixelBarLayout, pixelWidth, pixelHeight, histogram, binDomain, max, colorScale]);
 
   return (
     <div style={{ height, position: "relative", width }}>
@@ -122,57 +128,82 @@ export function useNumberHistogramScale({
   );
 }
 
+export function useNumberHistogramBarLayout({
+  binCount,
+  width,
+}: {
+  binCount: number;
+  width: number;
+}): PixelSnappedBarX[] {
+  return useMemo(
+    () =>
+      getPixelSnappedHistogramBarXLayout({
+        count: binCount,
+        desiredGap: 2,
+        minBarWidthForGap: 2,
+        width,
+      }),
+    [binCount, width],
+  );
+}
+
 function drawNumberHistogram({
   binDomain,
-  canvasWidth,
   colorScale,
   context,
   histogram,
   max,
+  pixelBarLayout,
   pixelHeight,
   pixelWidth,
 }: {
   binDomain: [number, number];
-  canvasWidth: number;
   colorScale: (value: number | undefined) => string;
   context: CanvasRenderingContext2D;
   histogram: NumberHistogramEntry[];
   max: number;
+  pixelBarLayout: PixelSnappedBarX[];
   pixelHeight: number;
   pixelWidth: number;
 }) {
   context.imageSmoothingEnabled = false;
   context.clearRect(0, 0, pixelWidth, pixelHeight);
 
-  const pixelXScale = d3.scaleLinear().domain(binDomain).range([0, pixelWidth]);
-  const pixelHeightScale = d3.scaleLinear().domain([0, max]).range([0, pixelHeight]);
-  const gap = Math.max(1, Math.round(pixelWidth / Math.max(canvasWidth, 1)));
+  const drawableHeight = Math.max(pixelHeight - 1, 0);
+  const safeMax = Math.max(max, 0);
 
-  for (const [index, { bin, filteredCount, totalCount }] of histogram.entries()) {
-    const x0 = Math.round(pixelXScale(bin.x0 ?? binDomain[0]));
-    const x1 = Math.round(pixelXScale(bin.x1 ?? binDomain[1]));
-    const barX = index === 0 ? x0 : x0 + gap;
-    const barWidth = Math.max(x1 - barX, 0);
-    const totalBarHeight = max === 0 ? 0 : Math.round(pixelHeightScale(totalCount));
-    const filteredBarHeight = max === 0 ? 0 : Math.round(pixelHeightScale(filteredCount));
+  for (const bar of pixelBarLayout) {
+    const entry = histogram[bar.index];
 
-    if (barWidth === 0 || totalBarHeight === 0) {
+    if (entry === undefined) {
       continue;
     }
 
+    const isFiltered = entry.filteredCount !== entry.totalCount;
+
+    const totalHeight =
+      safeMax === 0 ? 0 : Math.round((Math.max(entry.totalCount, 0) / safeMax) * drawableHeight);
+    const filteredHeight =
+      safeMax === 0 ? 0 : Math.round((Math.max(entry.filteredCount, 0) / safeMax) * drawableHeight);
+    const totalY = pixelHeight - totalHeight;
+    const filteredY = pixelHeight - filteredHeight;
+
+    if (bar.width === 0 || totalHeight === 0) {
+      continue;
+    }
+
+    const { bin } = entry;
     const colorValue = ((bin.x0 ?? binDomain[0]) + (bin.x1 ?? binDomain[1])) / 2;
 
-    context.fillStyle = colorScale(colorValue);
-    context.globalAlpha = 0.2;
-    context.fillRect(barX, pixelHeight - totalBarHeight, barWidth, totalBarHeight);
-
-    if (filteredBarHeight === 0) {
+    if (isFiltered) {
+      context.strokeStyle = "black";
       context.globalAlpha = 1;
-      continue;
+      context.strokeRect(bar.x, totalY, bar.width, totalHeight);
     }
 
+    context.fillStyle = colorScale(colorValue);
     context.globalAlpha = 1;
-    context.fillRect(barX, pixelHeight - filteredBarHeight, barWidth, filteredBarHeight);
+    context.fillRect(bar.x, filteredY, bar.width, filteredHeight);
   }
 
   context.globalAlpha = 1;

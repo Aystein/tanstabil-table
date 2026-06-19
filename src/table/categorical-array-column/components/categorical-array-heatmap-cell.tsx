@@ -2,8 +2,8 @@ import { Tooltip } from "@mantine/core";
 import { useCanvas } from "@/hooks/use-canvas";
 import { useFrameEffect } from "@/hooks/use-frame-effect";
 import { isClusterColumn } from "@/table/cluster-column/types";
-import type { VantageFeatures } from "@/table/use-vantage-table";
-import type { CellContext, RowData } from "@tanstack/react-table";
+import type { TanstabilCellContext } from "@/table/table-types";
+import type { RowData } from "@tanstack/react-table";
 import { useMemo, useState, type MouseEvent } from "react";
 import { isCategoricalArrayColumn } from "../types";
 
@@ -21,7 +21,7 @@ export function CategoricalArrayHeatmapCell<TData extends RowData>({
   column,
   getValue,
   table,
-}: CellContext<VantageFeatures, TData, string[] | undefined>) {
+}: TanstabilCellContext<TData, string[] | undefined>) {
   const { ref, width, height, pixelWidth, pixelHeight, context } = useCanvas();
   const [hoveredIndex, setHoveredIndex] = useState<number>();
   const isSupportedColumn = isCategoricalArrayColumn(column) || isClusterColumn(column);

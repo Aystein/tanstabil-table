@@ -1,17 +1,18 @@
 import { Box, HoverCard, Stack, Text } from "@mantine/core";
-import type { CellContext, RowData } from "@tanstack/react-table";
+import type { RowData } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import type { CellRenderer } from "@/table/features/cell-visualization/types";
-import type { VantageFeatures } from "@/table/use-vantage-table";
+import type { TanstabilCellContext } from "@/table/table-types";
 import { isNumberColumn } from "../typeguards";
 import {
   getNumberHistogramDomain,
   getNumberHistogramEntries,
   getNumberHistogramMax,
   NumberHistogramPlot,
-  useNumberHistogramScale,
+  useNumberHistogramBarLayout,
 } from "./number-histogram";
 import { NumberFilterBinLayer } from "./number-filter-bin-layer";
+import { getBinIndexForX } from "./use-number-filter-brush";
 
 const formatter = new Intl.NumberFormat();
 
@@ -19,7 +20,7 @@ export function NumberColumnHistogramSummaryCell<TData extends RowData>({
   column,
   row,
   table,
-}: CellContext<VantageFeatures, TData, unknown>) {
+}: TanstabilCellContext<TData, unknown>) {
   if (!isNumberColumn(column)) {
     return null;
   }
@@ -48,7 +49,7 @@ export function NumberColumnHistogramSummaryCell<TData extends RowData>({
   const height = table.atoms.rowHeight.get();
   const labelHeight = Math.min(14, height);
   const histogramHeight = Math.max(height - labelHeight, 0);
-  const xScale = useNumberHistogramScale({ binDomain, width });
+  const cssBarLayout = useNumberHistogramBarLayout({ binCount: bins.length, width });
   const [hoveredBinIndex, setHoveredBinIndex] = useState<number | undefined>(undefined);
   const hoveredEntry = hoveredBinIndex === undefined ? undefined : histogram[hoveredBinIndex];
   const hoveredBin = hoveredEntry?.bin;
@@ -81,12 +82,7 @@ export function NumberColumnHistogramSummaryCell<TData extends RowData>({
               onPointerMove={(event) => {
                 const rect = event.currentTarget.getBoundingClientRect();
                 const x = event.clientX - rect.left;
-                const nextIndex = bins.findIndex((bin, index) => {
-                  const x0 = xScale(bin.x0 ?? binDomain[0]);
-                  const x1 = xScale(bin.x1 ?? binDomain[1]);
-
-                  return index === bins.length - 1 ? x >= x0 && x <= x1 : x >= x0 && x < x1;
-                });
+                const nextIndex = getBinIndexForX(x, cssBarLayout);
 
                 setHoveredBinIndex(nextIndex === -1 ? undefined : nextIndex);
               }}
@@ -110,12 +106,11 @@ export function NumberColumnHistogramSummaryCell<TData extends RowData>({
                 viewBox={`0 0 ${width} ${histogramHeight}`}
               >
                 <NumberFilterBinLayer
+                  cssBarLayout={cssBarLayout}
                   bins={bins}
-                  binDomain={binDomain}
                   histogramHeight={histogramHeight}
                   hoveredBinIndex={hoveredBinIndex}
                   selectedBinIds={[]}
-                  xScale={xScale}
                 />
               </svg>
             </Box>

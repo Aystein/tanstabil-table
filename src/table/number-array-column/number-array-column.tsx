@@ -1,8 +1,7 @@
-import type { CellContext } from "@tanstack/react-table";
+import type { TanstabilCellContext } from "../table-types";
 import type { CellRenderer } from "../features/cell-visualization/types";
 import { Tooltip } from "@mantine/core";
 import { useState, type JSX, type MouseEvent } from "react";
-import type { VantageFeatures } from "../use-vantage-table";
 import { assertIsNumberArrayColumn } from "./types";
 import { useCanvas } from "@/hooks/use-canvas";
 import { useFrameEffect } from "@/hooks/use-frame-effect";
@@ -11,7 +10,7 @@ export function NumberArrayColumnCell({
   column,
   table,
   getValue,
-}: CellContext<VantageFeatures, any, number[] | undefined>) {
+}: TanstabilCellContext<any, number[] | undefined>) {
   assertIsNumberArrayColumn(column);
 
   const { ref, width, height, pixelWidth, pixelHeight, context } = useCanvas();
@@ -105,7 +104,7 @@ export function NumberArrayColumnCell({
 }
 
 export const numberArrayCellRenderer: CellRenderer = {
-  component: NumberArrayColumnCell as (props: CellContext<any, any>) => JSX.Element,
+  component: NumberArrayColumnCell as (props: TanstabilCellContext<any>) => JSX.Element,
   id: "number-array",
   name: "Number array",
 };
